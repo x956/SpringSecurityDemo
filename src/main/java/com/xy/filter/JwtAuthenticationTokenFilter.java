@@ -34,15 +34,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("开始进行JWT过滤...");
-        //获取token
+        //TODO 获取token
         String token = request.getHeader("token");
         if(!StringUtils.hasText(token)){    //如果token是空的
-            //放行，交给之后的过滤器处理
+            //TODO 放行，交给之后的过滤器处理
             filterChain.doFilter(request,response);
             return;
         }
 
-        //解析token获取其中的userid
+        //TODO 解析token获取其中的userid
         String userid;
         try {
             Claims claims = JwtUtil.parseJWT(token);
@@ -51,16 +51,16 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             e.printStackTrace();
             throw new RuntimeException("token非法");
         }
-        //从redis获取用户信息
+        //TODO 从redis获取用户信息
         String redisKey = "login:"+userid;
         LoginUser loginUser=redisCache.getCacheObject(redisKey);
         if(Objects.isNull(loginUser)){
             throw new RuntimeException("用户未登录");
         }
-        //存入SecurityContextHolder
-        // TODO 这里还是需要去传入权限信息
+        //TODO 存入SecurityContextHolder
+        //   TODO 这里还是需要去传入权限信息
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginUser,null,null);
+                new UsernamePasswordAuthenticationToken(loginUser,null,loginUser.getAuthorities());
         //其他的过滤器资源可以从securityContextHolder中获取用户的信息
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         //放行

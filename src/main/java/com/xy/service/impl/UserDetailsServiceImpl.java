@@ -3,6 +3,7 @@ package com.xy.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.xy.domain.LoginUser;
 import com.xy.domain.User;
+import com.xy.mapper.MenuMapper;
 import com.xy.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -24,6 +28,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private MenuMapper menuMapper;
+
     //根据用户信息查询用户信息(查询数据库中的信息)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -33,15 +40,14 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(User::getUserName,username);
         User user=userMapper.selectOne(lambdaQueryWrapper);
+        System.out.println(user);
         if(Objects.isNull(user)){
+
             throw new UsernameNotFoundException("用户名为空");
         }
-
-        //TODO 查询对应权限信息
-
-
+        //   TODO 查询对应权限信息
+        List<String> list = menuMapper.selectPermsByUserId(user.getId());
         //TODO 封装成UserDetails类别返回
-
-        return new LoginUser(user);
+        return new LoginUser(user,list);
     }
 }
