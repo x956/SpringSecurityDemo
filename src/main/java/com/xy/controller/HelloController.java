@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
 
     @RequestMapping("/hello")
-    @PreAuthorize("hasAuthority('system:dept:listqq')")
+    //@PreAuthorize("hasAuthority('system:dept:listqq')")
     public String hello(){
         return "hello spring boot is running~~~";
     }
